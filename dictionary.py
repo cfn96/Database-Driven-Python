@@ -6,29 +6,38 @@ class File:
         self.full_path_name = full_path_name
         self.owner_name = owner_name
 
-        if self.file_type == "sqlite":
-            import sqlite3
 
     def openfile(self):  # open file by connecting to server
-        pass
+        if self.file_type == "sqlite":
+            import sqlite3 as sqlt
+        self.conn = sqlt.connect(self.owner_name)
+        print(type(self.conn))
 
     def create(self):
-        # print(self.maps)
-        create_statement = "CREATE TABLE {}"
-        for value in self.maps.values():
+        create_statement = "create table {}(".format(
+            self.full_path_name).upper()
+        for key, value in self.maps.items():
             if type(value) == str:
-                print("string")
+                data_type = "TEXT"
             elif type(value) == float:
-                print("float")
+                data_type = "REAL"
             elif type(value) in (int, bool):  # sqlite treats bool as INT
-                print("int")
-            else:
-                print("called")
+                data_type = "INT"
+            column_str = key + " " + data_type
+            create_statement = create_statement + "{},".format(column_str)
+        create_statement = create_statement[:-1] + ")"
+        print(create_statement)
+        # cur = self.conn.cursor()
 
     def closefile(self):  # close file by disconnecting to server
         pass
 
 
-employee = File(file_type="sqlite", full_path_name="EMPLOYEE", owner_name="maindatabase.db", id=1, firstname="test",
-                lastname=2.3, active=True)
-employee.create()
+employee = File(file_type="sqlite",
+                full_path_name="employee",
+                owner_name="maindatabase.db",
+                id=1,
+                firstname="test",
+                lastname=2.3,
+                active=True)
+employee.openfile()
